@@ -11,8 +11,8 @@ class BitcoinStandards:
     orderOfFieldElements = 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141
     
     @staticmethod
-    def uncompress_wallet_import_format(private_key: hex, mainnet_format: bool = True) -> str:
-        key = ('80' if mainnet_format else 'ef' ) + private_key
+    def uncompress_wallet_import_format(private_key: hex) -> str:
+        key = '80' + private_key
         key_bytes = bytes.fromhex(key)
         hashed_key = hashlib.new('sha256', key_bytes).digest()
         hashed_key = hashlib.new('sha256', hashed_key).digest()
@@ -23,8 +23,16 @@ class BitcoinStandards:
         raise ValueError ('Something went wrong')
     
     @staticmethod
-    def compress_wallet_import_format(private_key: hex, mainnet_format: bool = True) -> str:
-        pass
+    def compress_wallet_import_format(private_key: hex) -> str:
+        key = '80' + private_key + '01'
+        key_bytes = bytes.fromhex(key)
+        hashed_key = hashlib.new('sha256', key_bytes).digest()
+        hashed_key = hashlib.new('sha256', hashed_key).digest()
+        key = codecs.encode(binascii.unhexlify(key), 'hex') + codecs.encode(hashed_key[:4], 'hex')
+        wif = (base58.b58encode(binascii.unhexlify(key))).decode('utf-8')
+        if wif[0] == 'K' or wif[0] == 'L':
+            return wif
+        raise ValueError ('Something went wrong')
         
 
     @staticmethod
@@ -33,8 +41,8 @@ class BitcoinStandards:
     
     @staticmethod
     def private_key_base64(private_key_hex: hex = None) -> str:
-        private_key_bytes = bytes.fromhex(private_key)
-        return str(base64.b64encode(private_key_bytes))
+        private_key_bytes = bytes.fromhex(private_key_hex)
+        return (base64.b64encode(private_key_bytes)).decode('utf-8')
 
     @staticmethod
     def compress_public_key(public_key_x : hex, public_key_y : hex) -> str:
