@@ -12,16 +12,19 @@ class BitcoinStandards:
     
     @staticmethod
     def uncompress_wallet_import_format(private_key: hex, mainnet_format: bool = True) -> str:
-        pass
-    
-    @staticmethod
-    def compress_wallet_import_format(private_key: hex, mainnet_format: bool = True) -> str:
         key = ('80' if mainnet_format else 'ef' ) + private_key
         key_bytes = bytes.fromhex(key)
         hashed_key = hashlib.new('sha256', key_bytes).digest()
         hashed_key = hashlib.new('sha256', hashed_key).digest()
         key = codecs.encode(binascii.unhexlify(key), 'hex') + codecs.encode(hashed_key[:4], 'hex')
-        return base58.b58encode(binascii.unhexlify(key))
+        wif = (base58.b58encode(binascii.unhexlify(key))).decode('utf-8')
+        if wif[0] == '5':
+            return wif
+        raise ValueError ('Something went wrong')
+    
+    @staticmethod
+    def compress_wallet_import_format(private_key: hex, mainnet_format: bool = True) -> str:
+        pass
         
 
     @staticmethod
@@ -84,5 +87,4 @@ class BitcoinStandards:
         pass
 
 if __name__ == '__main__':
-    BitcoinStandards.compress_wallet_import_format('619c335025c7f4012e556c2a58b2506e30b8511b53ade95ea316fd8c3286feb9', False)
     pass
