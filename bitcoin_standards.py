@@ -12,24 +12,52 @@ class BitcoinStandards:
     
     @staticmethod
     def uncompress_wallet_import_format(private_key: hex) -> str:
+        
+        # adding 80 as prefix to key to state that the wif is valid for mainnet purpose
         key = '80' + private_key
+        
+        # converting extended private key to bytes from hex
         key_bytes = bytes.fromhex(key)
+        
+        # hashing extended key in bytes format with the sha256 algorithm
         hashed_key = hashlib.new('sha256', key_bytes).digest()
+        
+        # again hashing the hashed key with the sha256 algorithm for checksum purpose
         hashed_key = hashlib.new('sha256', hashed_key).digest()
+        
+        # adding checksum as postfix to extended key for base58 encoding
         key = codecs.encode(binascii.unhexlify(key), 'hex') + codecs.encode(hashed_key[:4], 'hex')
+        
+        # base58 encoding the extended secret key and converting back to string format
         wif = (base58.b58encode(binascii.unhexlify(key))).decode('utf-8')
+        
+        # verification of key
         if wif[0] == '5':
             return wif
         raise ValueError ('Something went wrong')
     
     @staticmethod
     def compress_wallet_import_format(private_key: hex) -> str:
+        
+        # adding 80 as prefix to key and postfix 01 to state that the wif is valid for mainnet purpose
         key = '80' + private_key + '01'
+        
+        # converting extended private key to bytes from hex
         key_bytes = bytes.fromhex(key)
+        
+        # hashing extended key in bytes format with the sha256 algorithm
         hashed_key = hashlib.new('sha256', key_bytes).digest()
+        
+        # again hashing the hashed key with the sha256 algorithm for checksum purpose
         hashed_key = hashlib.new('sha256', hashed_key).digest()
+        
+        # adding checksum as postfix to extended key for base58 encoding
         key = codecs.encode(binascii.unhexlify(key), 'hex') + codecs.encode(hashed_key[:4], 'hex')
+        
+        # base58 encoding the extended secret key and converting back to string format
         wif = (base58.b58encode(binascii.unhexlify(key))).decode('utf-8')
+        
+        # verification of key
         if wif[0] == 'K' or wif[0] == 'L':
             return wif
         raise ValueError ('Something went wrong')
