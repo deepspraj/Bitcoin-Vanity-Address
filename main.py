@@ -1,8 +1,7 @@
-import vanity_address
+from vanity_address import *
 
 def main():
-    vanity_address.AddressGenerator
-
+    VanityAddress.address_generator('')
 
 
 if __name__ == '__main__':

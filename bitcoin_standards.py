@@ -79,7 +79,7 @@ class BitcoinStandards:
     def compress_public_key(public_key_x : hex, public_key_y : hex) -> str:
         # check whether the y co-ordinate of public key (hex) is even or odd
         if int(public_key_y, 16)%2 == 0:
-            
+
             # adding prefix '02' to x co-ordinate of public key (hex)
             return ('02' + public_key_x[2:]).upper()
         
@@ -97,6 +97,11 @@ class BitcoinStandards:
     @staticmethod
     def compressed_public_key_to_wallet_address(compressed_public_key: str) -> str:
         # converting compressed_public_key hex to bytes format
+        print(len(compressed_public_key), compressed_public_key)
+
+        if len(compressed_public_key) == 65:
+            return None
+
         public_key_bytes = bytes.fromhex(compressed_public_key)
 
         # hashing public_key_bytes with the sha256 algorithm
