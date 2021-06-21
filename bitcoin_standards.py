@@ -97,10 +97,10 @@ class BitcoinStandards:
     @staticmethod
     def compressed_public_key_to_wallet_address(compressed_public_key: str) -> str:
         # converting compressed_public_key hex to bytes format
-        print(len(compressed_public_key), compressed_public_key)
+        # print(len(compressed_public_key), compressed_public_key)
 
         if len(compressed_public_key) == 65:
-            return None
+            compressed_public_key = '0' + compressed_public_key
 
         public_key_bytes = bytes.fromhex(compressed_public_key)
 
