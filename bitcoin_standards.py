@@ -134,6 +134,29 @@ class BitcoinStandards:
         return base_address.decode('utf-8')
 
     @staticmethod
+    def decompress_public_key(comp_pubkey: str) -> str:
+        # Cipolla's algorithm (https://en.wikipedia.org/wiki/Cipolla%27s_algorithm)
+        # check whether the y_coordinate is even or odd
+        prefix = int(comp_pubkey[:2]) - 2
+
+        # extract x coordinate from compressed public key
+        pubkey = int(comp_pubkey[2:], 16)
+
+        # use elliptical curve to generate y
+        y_square = (pow(pubkey, 3 , BitcoinStandards.primeNumber) + 7) % BitcoinStandards.primeNumber
+
+        # find the square root of the generated y2
+        y_coordinate = pow(y_square, (BitcoinStandards.primeNumber + 1)//4, BitcoinStandards.primeNumber)
+
+        # check whether the generated y coordinate is even or odd
+        if (y_coordinate % 2) != prefix:
+            # if generated y coordinate is odd then the diff between primeNumber and generated y coordinate is required answer
+            # else generated y coordinate is correct
+            y_coordinate = (-y_coordinate) % BitcoinStandards.primeNumber
+
+        return str(hex(y_coordinate)[2:])
+
+    @staticmethod
     def uncompressed_public_key_to_wallet_address(uncompressed_public_key: hex) -> str:
         pass
 
