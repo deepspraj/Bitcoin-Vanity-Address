@@ -1,17 +1,17 @@
 from curve import *
 from bitcoin_standards import *
 import secrets
-from time import sleep
+from time import sleep, time
 
 class VanityAddress:
 
     @staticmethod
-    def address_generator(pattern = None):
+    def address_generator(count, pattern = None):
         generator_point = Super256Point(BitcoinStandards.generatorPointX, BitcoinStandards.generatorPointY)
-        priv_key = secrets.randbelow(BitcoinStandards.primeNumber)
+        
         while True:
+            priv_key = secrets.randbelow(BitcoinStandards.primeNumber)
             public_key = priv_key*generator_point
-            print('PX : ', hex(public_key.x))
             compressed_pub_key = BitcoinStandards.compress_public_key(hex(public_key.x), hex(public_key.y))
             address = BitcoinStandards.compressed_public_key_to_wallet_address(compressed_pub_key)
             if pattern :
@@ -19,9 +19,7 @@ class VanityAddress:
                     print('Wallet Add : ', address, 'Private Key : ', hex(priv_key)[2:])
             else:
                 print('Wallet Add : ', address, 'Private Key : ', hex(priv_key)[2:])
-
-            priv_key += 1
-            sleep(0.75)
-
+        
+        return None
 if __name__ == '__main__':
     pass
